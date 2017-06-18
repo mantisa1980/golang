@@ -12,14 +12,16 @@ import "strconv"
 // read or write on conn
 
 func ddos_worker(wg *sync.WaitGroup, conn net.Conn, no int) {
-  defer log.Println("defer ddos")
+  //defer log.Println("defer ddos")
   //defer conn.Close()  // cannot close on exiting this function, since goroutine is not yet finished
   //defer wg.Done()
   
   var sendBuf bytes.Buffer
   
-  pattern := strconv.Itoa(no) + "我" 
-  //log.Println("pattern=", pattern)
+  //pattern := strconv.Itoa(no) + "--------------------------------------------------------------------------------------" 
+  pattern := strconv.Itoa(no)
+  //pattern := no 
+  log.Println("pattern=", pattern)
 
   go func(pattern string, conn net.Conn) {
     counter :=0
@@ -39,23 +41,24 @@ func ddos_worker(wg *sync.WaitGroup, conn net.Conn, no int) {
       var readBuf bytes.Buffer
       var buf = make([]byte, 10)
       readLen := 0
-      for readLen < sb.Len()  {
+      //for readLen < sb.Len()  {
+      for {
         dataLen, _ := conn.Read(buf)
 
         readLen += dataLen
-        log.Println("read len:", dataLen, "now len:", readLen)  
+        log.Println("bot", no, " read len:", dataLen, "now len:", readLen, "data",  string(buf))  // or just print bytes buf
         readBuf.Write(buf[:dataLen] )
       }
-      log.Println("fin reading:", readBuf.String())
+      //log.Println("fin reading:", readBuf.String())
       channel <- 9999
     }(conn, c1, sendBuf)
 
     signal := <-c1
     log.Println("receive signal", signal)
   }(pattern, conn)
-  log.Println("end of ddos")
+  //log.Println("end of ddos")
 
-  //time.Sleep(time.Millisecond * 1000)
+  //time.Sleep(time.Millisecond * 1000)  // sleep to see  forwarded data
 }
 
   
@@ -64,7 +67,7 @@ func main() {
   var wg sync.WaitGroup
 
   log.Println("dial ok")
-  for i := 0; i < 2; i++ {
+  for i := 0; i < 4; i++ {
     conn, err := net.DialTimeout("tcp", ":8888", 2 * time.Second)
     if err != nil {
       log.Println("dial error:", i, err)
