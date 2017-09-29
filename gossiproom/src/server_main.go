@@ -35,6 +35,7 @@ func main() {
     //isoc.Send(buffer[:])
     //fmt.Println("server side: socket object local ip=", psock.LocalIP)
 
+    //fmt.Println("123")
     server := NT.SocketServer{"0.0.0.0", 8080}
     server.Run()
 }

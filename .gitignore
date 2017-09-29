@@ -1,0 +1,7 @@
+.vscode
+.svn
+**/bin
+**/pkg
+gossiproom/src/github.com
+gossiproom/src/golang.org
+gossiproom/src/sourcegraph.com
